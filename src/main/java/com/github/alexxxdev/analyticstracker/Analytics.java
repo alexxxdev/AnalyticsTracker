@@ -1,4 +1,4 @@
-package com.github.alexxxdev.analyticsTracker;
+package com.github.alexxxdev.analyticstracker;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -10,7 +10,6 @@ import java.lang.annotation.Target;
  */
 
 @Retention(RetentionPolicy.CLASS)
-@Target({ElementType.FIELD})
-public @interface AnalyticsEnumAttr {
-    String value() default "";
+@Target({ElementType.TYPE})
+public @interface Analytics {
 }

@@ -1,4 +1,4 @@
-package com.github.alexxxdev.analyticsTracker
+package com.github.alexxxdev.analyticstracker
 
 import com.squareup.kotlinpoet.*
 import java.io.IOException
@@ -19,8 +19,8 @@ import kotlin.collections.HashMap
 
 class AnalyticsProcessor : AbstractProcessor() {
 
-    private val nameTracker = "AnalyticsTracker"
-    private val packageTracker = "com.github.alexxxdev.analyticsTracker"
+    private val nameTracker = "Tracker"
+    private val packageTracker = "com.github.alexxxdev.analyticstracker"
 
     override fun getSupportedSourceVersion(): SourceVersion {
         return SourceVersion.latest()
@@ -64,9 +64,8 @@ class AnalyticsProcessor : AbstractProcessor() {
 
             val clazz = TypeSpec.objectBuilder(nameTracker)
                     .addProperty(PropertySpec.varBuilder("handlers", ParameterizedTypeName.get(ARRAY, WildcardTypeName.subtypeOf(AnalyticsHandler::class.asTypeName())), KModifier.PRIVATE)
-                            .initializer("emptyArray()")
                             .build())
-                    .addFunction(createFunInit())
+                    .addInitializerBlock(createFunInit(handler))
                     .addFunction(createFunSendAll())
                     .addFunction(createFunSend())
 
@@ -89,6 +88,21 @@ class AnalyticsProcessor : AbstractProcessor() {
         }
 
         return true
+    }
+
+    private fun createFunInit(handler: Set<Element>): CodeBlock {
+        val initBlock = CodeBlock.builder()
+                .addStatement("handlers = arrayOf(")
+
+        handler.forEachIndexed { index, item ->
+            if (index < handler.size - 1) {
+                initBlock.addStatement("%T(),", item.asType().asTypeName())
+            } else {
+                initBlock.addStatement("%T()", item.asType().asTypeName())
+            }
+        }
+        initBlock.addStatement(")")
+        return initBlock.build()
     }
 
     private fun createFunSend(element: Element, mutableList: MutableList<Element>): FunSpec {
@@ -143,13 +157,6 @@ class AnalyticsProcessor : AbstractProcessor() {
                 .beginControlFlow("handlers.forEach")
                 .addStatement("it.send(event, attrs.filter { it.value != null })")
                 .endControlFlow()
-                .build()
-    }
-
-    private fun createFunInit(): FunSpec {
-        return FunSpec.builder("init")
-                .addParameter("handler", AnalyticsHandler::class.asClassName(), KModifier.VARARG)
-                .addStatement("handlers = handler")
                 .build()
     }
 }

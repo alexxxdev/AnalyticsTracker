@@ -1,4 +1,4 @@
-package com.github.alexxxdev.analyticsTracker
+package com.github.alexxxdev.analyticstracker
 
 /**
  * Created by aderendyaev on 12.12.17.

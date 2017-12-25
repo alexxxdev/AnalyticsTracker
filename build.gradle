@@ -14,7 +14,7 @@ apply plugin: 'java'
 apply plugin: 'kotlin'
 apply plugin: 'maven'
 
-group 'com.github.alexxxdev.analyticsTracker'
+group 'com.github.alexxxdev.analyticstracker'
 version '1.0.1'
 
 repositories {

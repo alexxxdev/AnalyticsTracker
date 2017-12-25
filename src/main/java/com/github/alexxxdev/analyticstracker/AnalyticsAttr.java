@@ -1,4 +1,4 @@
-package com.github.alexxxdev.analyticsTracker;
+package com.github.alexxxdev.analyticstracker;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
