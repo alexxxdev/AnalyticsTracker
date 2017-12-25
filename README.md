@@ -11,13 +11,10 @@ buildscript {
 	  maven { url 'https://jitpack.io' }
 	}
   dependencies{
-    implementation 'com.github.alexxxdev:AnalyticsTracker:1.0.0'
-    kapt 'com.github.alexxxdev:AnalyticsTracker:1.0.0'
+    implementation 'com.github.alexxxdev:AnalyticsTracker:1.1.0'
+    kapt 'com.github.alexxxdev:AnalyticsTracker:1.1.0'
   }
 }
-```
-```Kotlin
-AnalyticsTracker.init(...)
 ```
 ```Kotlin
 @Analytics
@@ -26,7 +23,6 @@ class AnyAnalytics : AnalyticsHandler {
         ...
     }
 }
-
 ```
 ```Kotlin
 class Foo {
