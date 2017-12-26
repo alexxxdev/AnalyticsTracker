@@ -62,7 +62,7 @@ class AnalyticsProcessor : AbstractProcessor() {
             val builder = FileSpec.builder(packageTracker, nameTracker)
             builder.indent("\t")
 
-            val clazz = TypeSpec.objectBuilder(nameTracker)
+            val clazz = TypeSpec.classBuilder(nameTracker)
                     .addProperty(PropertySpec.varBuilder("handlers", ParameterizedTypeName.get(ARRAY, WildcardTypeName.subtypeOf(AnalyticsHandler::class.asTypeName())), KModifier.PRIVATE)
                             .build())
                     .addInitializerBlock(createFunInit(handler))
