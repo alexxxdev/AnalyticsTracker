@@ -121,10 +121,14 @@ class AnalyticsProcessor : AbstractProcessor() {
 
             var suffix = if (annotationEnum != null) "?.name" else ""
 
-            val value = if (annotation != null) {
-                item.getAnnotation(AnalyticsAttr::class.java)?.value ?: item.simpleName.toString()
+            val value: String = if (annotation != null) {
+                if (annotation.value.isEmpty()) item.simpleName.toString()
+                else annotation.value
+            } else if (annotationEnum != null) {
+                if (annotationEnum.value.isEmpty()) item.simpleName.toString()
+                else annotationEnum.value
             } else {
-                item.getAnnotation(AnalyticsEnumAttr::class.java)?.value ?: item.simpleName.toString()
+                item.simpleName.toString()
             }
 
             if (index < mutableList.size - 1) suffix += ","
