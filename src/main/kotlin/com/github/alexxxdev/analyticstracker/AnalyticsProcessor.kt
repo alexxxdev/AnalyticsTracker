@@ -64,9 +64,12 @@ class AnalyticsProcessor : AbstractProcessor() {
 
             val clazz = TypeSpec.classBuilder(nameTracker)
                     .addModifiers(KModifier.OPEN)
-                    .addProperty(PropertySpec.varBuilder("handlers", ParameterizedTypeName.get(ARRAY, WildcardTypeName.subtypeOf(AnalyticsHandler::class.asTypeName())), KModifier.PRIVATE)
+                    .addProperty(PropertySpec.varBuilder("handlers",
+                            ParameterizedTypeName.get(ARRAY, WildcardTypeName.subtypeOf(AnalyticsHandler::class.asTypeName())), KModifier.PRIVATE)
+                            .initializer("emptyArray()")
                             .build())
-                    .addInitializerBlock(createFunInit(handler))
+                    .addProperty(PropertySpec.varBuilder("disable", Boolean::class.java, KModifier.PRIVATE).initializer("false").build())
+                    .addFunction(createFunInit(handler))
                     .addFunction(createFunSendAll())
                     .addFunction(createFunSend())
 
@@ -91,8 +94,13 @@ class AnalyticsProcessor : AbstractProcessor() {
         return true
     }
 
-    private fun createFunInit(handler: Set<Element>): CodeBlock {
+    private fun createFunInit(handler: Set<Element>): FunSpec {
+        val function = FunSpec.builder("init")
+                .addParameter(ParameterSpec.builder("disable", Boolean::class.java).defaultValue("false").build())
+
         val initBlock = CodeBlock.builder()
+                .addStatement("this.disable = disable")
+                .addStatement("if(disable) return")
                 .addStatement("handlers = arrayOf(")
 
         handler.forEachIndexed { index, item ->
@@ -103,7 +111,9 @@ class AnalyticsProcessor : AbstractProcessor() {
             }
         }
         initBlock.addStatement(")")
-        return initBlock.build()
+
+        function.addCode(initBlock.build())
+        return function.build()
     }
 
     private fun createFunSend(element: Element, mutableList: MutableList<Element>): FunSpec {
@@ -113,6 +123,7 @@ class AnalyticsProcessor : AbstractProcessor() {
                         ParameterSpec.builder(element.simpleName.toString().toLowerCase(), element.asType().asTypeName())
                                 .build()
                 )
+                .addStatement("if(disable) return")
                 .addStatement("val attrs = mapOf(")
 
         mutableList.forEachIndexed { index, item ->
@@ -150,6 +161,7 @@ class AnalyticsProcessor : AbstractProcessor() {
                                 .defaultValue("emptyMap()")
                                 .build()
                 )
+                .addStatement("if(disable) return")
                 .addStatement("sendAll(event, attrs)")
                 .build()
     }
